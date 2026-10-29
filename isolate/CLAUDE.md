@@ -1,44 +1,57 @@
-# Vacuum Robot: Main Agent Instructions (Strategy 4: Isolate)
+# Vacuum Robot Project
+## Context Engineering Strategy 4: Isolate
 
-You are the **main agent (orchestrator)**. You receive the task, split it into
-parts, and delegate each part to the specialist whose scope fits it. You do not
-pass the full conversation history to a specialist. Send it only what its part
-needs. This is the **context filter**.
+You are assisting with a vacuum robot project for CS440, Artificial Intelligence, at Colorado State University.
 
-## Project summary
-A vacuum robot moves on a 4x4 grid world (one wall, a -1 trap, a +10 goal) with
-slippery 80/10/10 movement and a living cost per step. The project is built on
-the `aima` library (`aima.agents`: `Agent`, `Environment`) in Jupyter notebooks:
-- `vacuum_world.ipynb`, `agents.ipynb`: agent programs (random, table-driven, reflex, model-based)
-- `markov.ipynb`: `MDPEnvironment` and `value_iteration` (model-based, T and R known)
+This folder demonstrates Strategy 4: Isolation via Subagents.
 
-For the reinforcement learning lab, the robot does NOT have T and R. It must
-learn only by acting.
+The goal is to give each specialist only the context needed for its task.
 
-## Where things are
-This folder (`isolate/`) holds only the Strategy 4 setup. The notebooks are in
-the repository root, one level up (for example `../markov.ipynb`). Claude Code
-is started from inside `isolate/` with `claude --add-dir ..` so it can reach them.
+## Project Overview
 
-## Specialists (`.claude/agents/`)
-| Specialist               | Delegate when the task is about...                                 |
-|--------------------------|--------------------------------------------------------------------|
-| `environment-specialist` | `MDPEnvironment`, `default_world`, `percept()`, `execute_action()`, slip, rewards |
-| `agent-specialist`       | the robot's agent program: percept -> action with `Agent(program)` |
-| `mdp-specialist`         | `value_iteration`, `TRANSITIONS`, `get_reward`, policies, utilities |
-| `code-review-specialist` | reviewing a changed cell or diff before it is committed            |
+The vacuum robot operates in a 4x4 grid environment.
 
-## Delegation rules
-1. One specialist per sub-task. Don't ask one specialist to do another's job.
-2. Each delegation states the goal, the notebook/function it may change, and
-   the expected output. Never paste the chat history.
-3. Specialists return short summaries. Only the summary comes back to you.
-4. Keep T and R isolated: only `environment-specialist` and `mdp-specialist`
-   see the grid internals, `TRANSITIONS`, and `get_reward`. The
-   `agent-specialist` works only from `percept()`, `execute_action()`, and
-   `agent.performance`, just like the robot.
+The environment contains:
+- One starting position at the top-left
+- One obstacle
+- One cell labeled -1
+- One goal cell labeled +10
+- Normal cells labeled 0
 
-## Code style (from our notebooks)
-- Locations are `(row, col)` tuples; actions are `'Up'`, `'Down'`, `'Left'`, `'Right'`.
-- Agent programs are closures `program(percept)` wrapped in `Agent(...)`.
-- Import with `from aima.agents import *`.
+The transition model (T) and reward model (R) are not fully provided.
+
+Q-learning will be implemented in a future lab.
+
+## Project Context
+
+The following files contain important project information:
+
+- `context/environment.md`: grid details and unknown environment rules
+- `context/requirements.md`: assignment scope and submission requirements
+
+Pass each file only to the specialist that needs it. Do not import all context into every task.
+
+## Instructions
+
+1. Delegate grid questions to `environment-specialist` with `context/environment.md`.
+2. Delegate assignment questions to `requirements-specialist` with `context/requirements.md`.
+3. Delegate configuration reviews to `configuration-reviewer` with the specific files and relevant source excerpts.
+4. Give each specialist a clear task, allowed files, and expected output. Do not pass the full conversation.
+5. Combine their short summaries and identify missing or contradictory information.
+6. Do not invent transition probabilities, reward rules, or implementation results.
+
+## Current Lab Scope
+
+This lab focuses on configuring context engineering strategies using Claude Code.
+
+Do not implement Q-learning or write robot implementation code during this lab.
+
+## Specialists
+
+Specialist definitions are stored in `.claude/agents/`.
+
+Each specialist reads only the sources assigned to it and returns a short summary. All specialists are read-only.
+
+Use actual subagent calls. If a specialist cannot run, report that limitation.
+
+Do not modify project files without permission. Leave `../write/` unchanged unless the user requests otherwise.

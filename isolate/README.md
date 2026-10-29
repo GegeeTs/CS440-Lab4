@@ -1,73 +1,104 @@
-# isolate/: Context Engineering Strategy 4 (Isolate)
+# Context Engineering Strategy 4: Isolate
 
-CS440 FA2026, Lab 4: Vacuum robot using reinforcement learning.
+CS440 - Artificial Intelligence
+Colorado State University
+Fall 2026
 
-This folder sets up the context for an AI coding agent (Claude Code) using
-**Strategy 4: Isolation via Sub-Agents**. A main agent splits the work and
-hands each part to a specialist sub-agent. Each specialist sees only the
-context its job needs. This prevents **context confusion**, where irrelevant
-information shares the context window and dilutes the agent's focus.
+## Overview
 
-## The problem
+This directory demonstrates Strategy 4: Isolation via Subagents using Claude Code.
 
-```
-start  0   0   0
-  0    X   0   0
-  0    0   0   0
-  0   -1   0  10
-```
+A main agent splits the work and gives each part to a specialist. Each specialist receives only the context needed for its task and returns a short summary.
 
-A vacuum robot must reach +10 while avoiding the -1 trap and the wall (X).
-Movement is slippery (80% intended, 10% to each side) and every step has a
-living cost. In earlier labs we solved this with value iteration, where T and
-R were known. In this lab **we do not have T and R**, so the robot must learn
-by acting in the environment.
+## Problem Description
 
-## Folder structure
+The vacuum robot operates in a 4x4 grid.
 
-```
+| start | 0  | 0 | 0  |
+|-------|----|---|----|
+| 0     | X  | 0 | 0  |
+| 0     | 0  | 0 | 0  |
+| 0     | -1 | 0 | 10 |
+
+The robot will eventually use Q-learning.
+
+The transition model (T) and reward model (R) are not fully provided.
+
+Q-learning is not implemented in this lab.
+
+## Project Structure
+
+```text
 isolate/
-├── CLAUDE.md                          # Main agent (orchestrator): project summary, which
-│                                      # specialist gets which task, delegation rules
-├── .claude/
-│   └── agents/                        # Specialist sub-agents (YAML frontmatter + instructions)
-│       ├── environment-specialist.md  # MDPEnvironment, default_world, percept(), execute_action()
-│       ├── agent-specialist.md        # Agent programs (percept -> action); never sees T or R
-│       ├── mdp-specialist.md          # value_iteration, TRANSITIONS, get_reward (model-based baseline)
-│       └── code-review-specialist.md  # Read-only reviewer; sees only the changed code
-└── README.md                          # This file
+├── CLAUDE.md
+├── README.md
+├── context/
+│   ├── environment.md
+│   └── requirements.md
+└── .claude/
+    └── agents/
+        ├── environment-specialist.md
+        ├── requirements-specialist.md
+        └── configuration-reviewer.md
 ```
 
-The notebooks (`markov.ipynb`, `vacuum_world.ipynb`, `agents.ipynb`) are in the
-repository root and are shared with the Strategy 1 (`write/`) setup.
+## File Descriptions
 
-## How the files work together
+### CLAUDE.md
 
-1. You give Claude Code a task, for example "change the living cost and show the new policy."
-2. Claude reads `CLAUDE.md` and learns it is the orchestrator and which specialists exist.
-3. It delegates each part with a short, focused prompt. It does not pass the chat history.
-4. Each specialist (`.claude/agents/*.md`) works only with its own context and
-   the tools in its `tools:` list.
-5. Each specialist returns a short summary. Only that summary goes back to the main agent.
+Contains the main instructions, specialist assignments, and delegation rules.
 
-| Specialist               | Knows about                                         | Can edit                 |
-|--------------------------|-----------------------------------------------------|--------------------------|
-| `environment-specialist` | grid internals, slip, rewards, living cost          | `MDPEnvironment`, `default_world` |
-| `agent-specialist`       | only `percept()`, `execute_action()`, `performance` | agent programs           |
-| `mdp-specialist`         | `TRANSITIONS`, `get_reward`, value iteration        | markov.ipynb helpers     |
-| `code-review-specialist` | only the changed code                               | nothing (read-only)      |
+### context/environment.md
 
-**Why this split:** the `agent-specialist` is kept away from T and R in the same
-way the robot is. Only the environment and MDP specialists see the transition
-and reward details.
+Documents the vacuum robot's grid, important locations, and unknown environment details.
 
-## Using it
-Claude Code loads `CLAUDE.md` and `.claude/agents/` from the folder it is started
-in, so start it inside `isolate/` and give it access to the notebooks one level up:
+### context/requirements.md
 
-```bash
-cd isolate
-claude --add-dir ..
-```
+Documents the assignment scope and submission requirements.
 
-Then run `/agents` to see the four specialists and give the main agent a task.
+### .claude/agents/environment-specialist.md
+
+Defines the specialist that checks the grid and identifies unknown environment details.
+
+### .claude/agents/requirements-specialist.md
+
+Defines the specialist that checks the assignment scope and submission requirements.
+
+### .claude/agents/configuration-reviewer.md
+
+Defines the specialist that reviews selected configuration files for errors and contradictions.
+
+## How the Strategy Works
+
+1. You give Claude Code a task.
+2. Claude reads CLAUDE.md and selects the appropriate specialists.
+3. Each specialist receives a focused task and the relevant sources, rather than the full chat history.
+4. Each specialist returns a short summary.
+5. The main agent combines the findings into an answer.
+
+All three specialists are read-only.
+
+## Demonstration
+
+1. Open a terminal in the isolate directory and start Claude Code.
+2. Run `/agents` to check that the three specialists appear.
+3. Ask Claude to review the grid and assignment requirements using the specialists.
+4. Check the actual delegations and compare their responses with the source files.
+
+## Expected Behavior
+
+Claude should:
+
+- Identify the start at (0, 0), obstacle, and reward cells correctly.
+- Recognize that T and R are not fully provided.
+- Keep Q-learning for a future lab.
+- Give each specialist only the context needed for its task.
+- Report missing information instead of inventing rules.
+
+## Why This Is Context Engineering
+
+The Isolate strategy separates tasks into focused contexts. This reduces irrelevant information and helps each specialist stay on its assigned task.
+
+## Limitations
+
+File boundaries are instructions, not enforced access restrictions. Responses and actual delegation should still be verified. A live Claude Code demonstration has not yet been tested.
