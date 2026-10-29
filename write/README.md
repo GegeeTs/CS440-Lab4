@@ -35,10 +35,12 @@ Q-learning is not implemented in this lab.
 write/
 ├── CLAUDE.md
 ├── README.md
-└── context/
-    ├── environment.md
-    ├── requirements.md
-    └── decisions.md
+├── context/
+|   ├── environment.md
+|   ├── requirements.md
+|   └── decisions.md
+└── example-user-memory
+    └── CLAUDE.md
 ```
 
 ## File Descriptions
@@ -62,6 +64,12 @@ Documents the current assignment requirements, restrictions, and submission inst
 Stores important decisions made by the group.
 
 This allows project decisions to be referenced across conversations.
+
+### example-user-memory/CLAUDE.example.md
+
+This document contains general preferences most people would like to have, not specifics about this lab.
+
+To use it, put the contents in your user memory by running `cp example-user-memory/CLAUDE.example.md ~/.claude/CLAUDE.md` file, or if you already have your own user memory set up, use that one. This file is not read by the agent unless it is explicitly told to or the content is in `~/.claude/CLAUDE.md`.
 
 ## How the Strategy Works
 
